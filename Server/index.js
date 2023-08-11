@@ -7,7 +7,9 @@ const fileUpload = require('express-fileupload')
 const path = require('path')
 const sequelize = require('./core/database');
 const router = require('./routes');
+const events = require('events')
 const errorHandling = require('./middleware/error-handling')
+const emitter = new events.EventEmitter()
 
 const app = express();
 
@@ -23,6 +25,11 @@ app.use(express.static(path.resolve(__dirname, 'static')))
 
 app.use(errorHandling);
 
+app.get('/1', ((req, res) => {
+    emitter.emit('newMessage', {message: 'text'})
+    res.status(200)
+}))
+
 const start = async () => {
     try {
         await sequelize.authenticate();
@@ -32,5 +39,6 @@ const start = async () => {
         console.log(e);
     }
 }
+
 
 start();
